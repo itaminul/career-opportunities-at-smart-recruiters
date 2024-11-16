@@ -36,10 +36,11 @@ export class ApplicantsResumeController {
     const filePath = file.path;
     const extractedData =
       await this.resumesService.extractDataFromPDF(filePath);
-    return { extname, filePath };
+    return { extractedData, filePath };
   }
   @Post()
   async saveResume(@Body() saveResume: CreateResumeDto): Promise<Resume> {
+    console.log("controller saveResume", saveResume);
     return this.resumesService.saveResume(saveResume);
   }
 }

@@ -29,6 +29,6 @@ export class Resume {
   @Column({ type: "datetime", nullable: true })
   updated_at: Date;
 
-  @OneToMany(() => Resume_attachments, (resumeAttachment) => resumeAttachment.resume)
-  attachments: Resume_attachments
+  @OneToMany(() => Resume_attachments, (attachment) => attachment.resume)
+  attachments: Resume_attachments[]
 }
