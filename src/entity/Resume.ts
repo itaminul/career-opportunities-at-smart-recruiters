@@ -1,35 +1,38 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Resume_attachments } from './Resume_attachements';
-@Entity()
+@Entity('resume')
 export class Resume {
   @PrimaryGeneratedColumn()
   id: number;
   @Column()
   name: string;
-  @Column()
+  @Column({ nullable: true})
   address: string;
-  @Column()
+  @Column({ nullable: true})
   phone: string;
-  @Column()
+  @Column({ nullable: true})
   email: string;
-  @Column()
+  @Column({ nullable: true})
   mobile: string;
 
-  @Column()
+  @Column({ nullable: true})
   experience: string;
 
-  @Column()
+  @Column({ nullable: true})
   present_salary: string;
 
-  @Column()
+  @Column({ nullable: true})
+  notice_period: string;
+
+  @Column({ nullable: true})
   expected_salary: string;
-  @Column()
+  @Column({ nullable: true})
   city: string;
-  @Column()
+  @Column({ nullable: true})
   district: string;
-  @Column()
+  @Column({ nullable: true})
   division: string;
-  @Column()
+  @Column({ nullable: true})
   dateOfBirth: string;
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
@@ -42,5 +45,5 @@ export class Resume {
     () => Resume_attachments,
     (resumeAttachment) => resumeAttachment.resume,
   )
-  attachments: Resume_attachments[];
+  attachments?: Resume_attachments[];
 }

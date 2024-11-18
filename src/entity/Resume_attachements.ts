@@ -6,15 +6,15 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Resume } from './Resume';
-@Entity()
+@Entity('resume_attachments')
 export class Resume_attachments {
   @PrimaryGeneratedColumn()
   id: number;
-  @Column()
+  @Column({ nullable: true})
   attachmentFile: string;
-  @Column()
+  @Column({ nullable: true})
   attachmentType: string;
-  @Column()
+  @Column({ nullable: true})
   attachmentPath: string;
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
@@ -23,7 +23,7 @@ export class Resume_attachments {
   @Column({ type: 'timestamp', nullable: true })
   updated_at: Date;
 
-  @ManyToOne(() => Resume, (resume) => resume.attachments, { nullable: false })
+  @ManyToOne(() => Resume, (resume) => resume.attachments, { nullable: true })
   @JoinColumn({ name: 'resume_id' })
   resume: Resume;
 }
