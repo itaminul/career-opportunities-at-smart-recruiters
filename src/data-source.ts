@@ -3,6 +3,7 @@ import { Users } from './entity/Users';
 import { Photo } from './entity/Photo';
 import { Resume } from './entity/Resume';
 import { Resume_attachments } from './entity/Resume_attachements';
+import { JobCandidate } from './entity/job_candidate';
 
 export const AppDataSource: DataSourceOptions = {
   type: 'postgres',
@@ -11,7 +12,7 @@ export const AppDataSource: DataSourceOptions = {
   username: 'erpdb',
   password: '123456',
   database: 'all_services_db',
-  entities: [Users, Resume, Resume_attachments, Photo],
+  entities: [Users, Resume, Resume_attachments, Photo, JobCandidate],
   // migrations: ['./src/migrations/*.ts'],
   migrations: ['./dist/migrations/*.js'],
   synchronize: false,
