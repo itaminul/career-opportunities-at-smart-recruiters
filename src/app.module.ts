@@ -1,9 +1,9 @@
-import { Module } from '@nestjs/common';
-import { ApplicantResumeModule } from './smart-recruiter/applicant-resume/applicant-resume.module';
-import { ApplicantsResumeModule } from './smart-recruiter/applicants-resume/applicants-resume.module';
-
+import { Module } from "@nestjs/common";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { AppDataSource } from "./data-source";
+import { ApplicantsResumeModule } from "./smart-recruiter/applicants-resume/applicants-resume.module";
 @Module({
-  imports: [ApplicantResumeModule, ApplicantsResumeModule],
+  imports: [TypeOrmModule.forRoot(AppDataSource), ApplicantsResumeModule],
   controllers: [],
   providers: [],
 })

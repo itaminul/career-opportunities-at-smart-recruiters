@@ -1,20 +1,10 @@
 import { Column, PrimaryGeneratedColumn } from "typeorm";
 
-export class Users {
+export class TestCheck {
   @PrimaryGeneratedColumn()
   id: number;
   @Column()
   name: string;
-  @Column()
-  username: string;
-  @Column()
-  password: string;
-  @Column()
-  roleName: string;
-  @Column({ default: true })
-  activeStatus: boolean;
-  @Column({ default: 1 })
-  orgId: number;
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
   created_at: Date;
   @Column({ type: "int", nullable: true })
