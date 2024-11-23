@@ -47,13 +47,13 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, Response<T>> {
     const response = ctx.getResponse();
     const status = HttpStatus.BAD_REQUEST;
     const responseBody: any = exception.getResponse();
-
+    const errors = responseBody?.errors || 'Validation errors are not available';
     return response.status(status).json({
       status: false,
       statusCode: status,
       path: request.url,
       message: "Validation failed",
-      errors: responseBody.errors, // Include validation errors
+      errors: errors, // Include validation errors
       timestamp: format(new Date(), "yyyy-MM-dd HH:mm:ss"),
     });
   }

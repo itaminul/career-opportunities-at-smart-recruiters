@@ -11,7 +11,8 @@ import { CreateResumeDto } from "./dto/create-resume.dto";
 
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
-import { extname } from "path";
+import { extname } from 'path';
+import * as path from 'path';
 import { Resume } from "src/entity/Resume";
 @Controller("applicants-resume")
 export class ApplicantsResumeController {
@@ -26,10 +27,16 @@ export class ApplicantsResumeController {
   @UseInterceptors(
     FileInterceptor("file", {
       storage: diskStorage({
-        destination: "./uploads/cv",
+        destination: (req, file, cb) => {
+          // Use absolute path for destination
+          const uploadPath = path.resolve('./uploads/cv');
+          console.log("filePath", uploadPath);
+          cb(null, uploadPath);
+        },
         filename: (req, file, callback) => {
           const name = file.originalname.split(".")[0];
           const fileExtName = extname(file.originalname);
+          console.log("fileExtName", fileExtName);
           const randdomName = Array(4)
             .fill(null)
             .map(() => Math.random().toString(36).substring(2, 15))
@@ -41,12 +48,14 @@ export class ApplicantsResumeController {
   )
   async uploadResume(@UploadedFile() file: Express.Multer.File) {
     const filePath = file.path;
+    console.log("filePath", filePath);
     const extractedData =
       await this.resumesService.extractDataFromPDF(filePath);
     return { extractedData, filePath };
   }
   @Post("create")
-  async saveResume(@Body() saveResume: CreateResumeDto): Promise<Resume> {
-    return this.resumesService.saveResume(saveResume);
+  @UseInterceptors(FileInterceptor('file')) 
+  async saveResume(@Body() saveResume: CreateResumeDto, @UploadedFile() file: Express.Multer.File): Promise<Resume> {
+    return this.resumesService.saveResume(saveResume, file);
   }
 }
