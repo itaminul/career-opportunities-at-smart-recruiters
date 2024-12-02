@@ -8,8 +8,9 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { CreateResumeDto } from "./dto/create-resume.dto";
 
-import pdfParse from "pdf-parse";
-import fs from "fs/promises";
+import * as fs from "fs";
+import * as pdfParse from "pdf-parse";
+
 import { Resume } from "src/entity/Resume";
 import { Resume_attachments } from "src/entity/Resume_attachements";
 
@@ -64,7 +65,7 @@ export class ApplicantsResumeService {
           });
         });
       }
-      
+
       // Create the Resume entity
       const resume = this.resumeRepository.create(resumeData);
       // Save the Resume entity
@@ -111,14 +112,47 @@ export class ApplicantsResumeService {
   }
 
   async extractDataFromPDF(filePath: string) {
-    const buffer = await fs.readFile(filePath);
-    const pdfData: pdfParse = await pdfParse(buffer);
-    const text = pdfData.text;
+    try {
+      // Read the file as a Buffer
+      const buffer = await fs.promises.readFile(filePath);
 
-    const name = text.match(/Name:\s*(.*)/)?.[1]?.trim() || "Unknown";
-    const email = text.match(/Email:\s*(.*)/)?.[1]?.trim() || "Unknown";
-    const phone = text.match(/Phone:\s*(.*)/)?.[1]?.trim() || "Unknown";
+      // Use pdf-parse to extract text from the PDF buffer
+      const pdfData = await pdfParse(buffer);
 
-    return { name, email, phone };
+      // Extract text from the parsed PDF
+      const text = pdfData.text;
+      console.log("service", text);
+      // Use regex to extract specific fields from the text
+
+      const name = text.match(/Name:\s*(.*)/)?.[1]?.trim() || "Unknown";
+      const address = text.match(/Address:\s*(.*)/)?.[1]?.trim() || "Unknown";
+      // const permanentAddress = text.match(/Permanent Address:\s*(.*)/)?.[1]?.trim() || "Unknown";
+      const email = text.match(/Email:\s*(.*)/)?.[1]?.trim() || "Unknown";
+      const phone = text.match(/Phone:\s*(.*)/)?.[1]?.trim() || "Unknown";
+      const mobile = text.match(/Mobile:\s*(.*)/)?.[1]?.trim() || "Unknown";
+      const experience =
+        text.match(/Experience:\s*(.*)/)?.[1]?.trim() || "Unknown";
+      const city = text.match(/City:\s*(.*)/)?.[1]?.trim() || "Unknown";
+      const district = text.match(/District:\s*(.*)/)?.[1]?.trim() || "Unknown";
+      const division = text.match(/Division:\s*(.*)/)?.[1]?.trim() || "Unknown";
+      const dateOfBirth =
+        text.match(/birth:\s*(.*)/)?.[1]?.trim() || "Unknown";
+
+      return {
+        name,
+        address,
+        email,
+        phone,
+        mobile,
+        city,
+        experience,
+        district,
+        division,
+        dateOfBirth,
+      };
+    } catch (error) {
+      console.error("Error reading or parsing PDF:", error);
+      throw new Error("Error processing the PDF file.");
+    }
   }
 }

@@ -1,4 +1,4 @@
-import { Transform, Type } from "class-transformer";
+import { Type } from "class-transformer";
 import {
   IsString,
   IsEmail,
@@ -22,7 +22,6 @@ class CreateResumeAttachmentDto {
 }
 
 export class CreateResumeDto {
-
   @IsNotEmpty()
   @IsString()
   name: string;
@@ -40,13 +39,13 @@ export class CreateResumeDto {
   mobile: string;
   @IsOptional()
   @IsString()
-  experience: string;  
+  experience: string;
   @IsOptional()
   @IsString()
-  present_salary: string;  
+  present_salary: string;
   @IsOptional()
   @IsString()
-  expected_salary: string;  
+  expected_salary: string;
 
   @IsOptional()
   @IsString()
@@ -64,7 +63,6 @@ export class CreateResumeDto {
   @IsOptional()
   @IsString()
   notice_period: string;
-  
 
   @IsOptional()
   @IsArray()
