@@ -36,7 +36,17 @@ export class Resume {
   @Column({ nullable: true })
   dateOfBirth: string;
   @Column({ default: 0 })
-  resumeStatus: number; // 0 for pending, 1 for for review
+  resumeStatus: number; // 0 for pending, 1 for for review 2 call for interview 3 final selected
+  @Column({ nullable: true })
+  interviewMessages: string;
+  @Column({ nullable: true })
+  interViewDate: string;
+  @Column({ nullable: true })
+  interViewTime: string;
+  @Column({ nullable: true })
+  selectedwMessages: string;
+  @Column({ nullable: true })
+  remarks: string;
   @Column({ default: 1 })
   activeStatus: boolean;
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })

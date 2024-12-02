@@ -4,15 +4,17 @@ import {
   Get,
   Post,
   UploadedFile,
+  UploadedFiles,
   UseInterceptors,
 } from "@nestjs/common";
 import { ApplicantsResumeService } from "./applicants-resume.service";
 import { CreateResumeDto } from "./dto/create-resume.dto";
 
-import { FileInterceptor } from "@nestjs/platform-express";
+import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
-import { extname } from 'path';
-import * as path from 'path';
+import { extname } from "path";
+import * as fs from "fs";
+import * as path from "path"; // Ensure path is imported too
 import { Resume } from "src/entity/Resume";
 @Controller("applicants-resume")
 export class ApplicantsResumeController {
@@ -23,20 +25,22 @@ export class ApplicantsResumeController {
     return await this.resumesService.getAll();
   }
 
-  @Post("upload")
+  @Post("create")
   @UseInterceptors(
-    FileInterceptor("file", {
+    FilesInterceptor("files", 10, {
+      // 'files' is the name of the form field, 10 is the max number of files
       storage: diskStorage({
         destination: (req, file, cb) => {
-          // Use absolute path for destination
-          const uploadPath = path.resolve('./uploads/cv');
-          console.log("filePath", uploadPath);
+          const uploadPath = path.resolve("./uploads/cv");
+          // Check if the directory exists, if not, create it
+          if (!fs.existsSync(uploadPath)) {
+            fs.mkdirSync(uploadPath, { recursive: true }); // Ensure the folder is created
+          }
           cb(null, uploadPath);
         },
         filename: (req, file, callback) => {
           const name = file.originalname.split(".")[0];
           const fileExtName = extname(file.originalname);
-          console.log("fileExtName", fileExtName);
           const randdomName = Array(4)
             .fill(null)
             .map(() => Math.random().toString(36).substring(2, 15))
@@ -46,16 +50,10 @@ export class ApplicantsResumeController {
       }),
     })
   )
-  async uploadResume(@UploadedFile() file: Express.Multer.File) {
-    const filePath = file.path;
-    console.log("filePath", filePath);
-    const extractedData =
-      await this.resumesService.extractDataFromPDF(filePath);
-    return { extractedData, filePath };
-  }
-  @Post("create")
-  @UseInterceptors(FileInterceptor('file')) 
-  async saveResume(@Body() saveResume: CreateResumeDto, @UploadedFile() file: Express.Multer.File): Promise<Resume> {
-    return this.resumesService.saveResume(saveResume, file);
+  async saveResume(
+    @Body() saveResume: CreateResumeDto,
+    @UploadedFiles() files: Express.Multer.File[]
+  ): Promise<Resume> {
+    return this.resumesService.saveResume(saveResume, files);
   }
 }
