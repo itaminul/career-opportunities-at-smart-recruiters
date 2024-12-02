@@ -64,6 +64,7 @@ export class ApplicantsResumeService {
           });
         });
       }
+      
       // Create the Resume entity
       const resume = this.resumeRepository.create(resumeData);
       // Save the Resume entity

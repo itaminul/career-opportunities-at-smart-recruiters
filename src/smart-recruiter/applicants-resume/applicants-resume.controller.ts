@@ -3,14 +3,13 @@ import {
   Controller,
   Get,
   Post,
-  UploadedFile,
   UploadedFiles,
   UseInterceptors,
 } from "@nestjs/common";
 import { ApplicantsResumeService } from "./applicants-resume.service";
 import { CreateResumeDto } from "./dto/create-resume.dto";
 
-import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
+import { FilesInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { extname } from "path";
 import * as fs from "fs";
