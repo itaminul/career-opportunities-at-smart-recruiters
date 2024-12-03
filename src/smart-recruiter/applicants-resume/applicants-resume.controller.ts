@@ -11,7 +11,7 @@ import {
 import { ApplicantsResumeService } from "./applicants-resume.service";
 import { CreateResumeDto } from "./dto/create-resume.dto";
 
-import { FilesInterceptor } from "@nestjs/platform-express";
+import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { extname } from "path";
 import * as fs from "fs";
@@ -27,8 +27,11 @@ export class ApplicantsResumeController {
   }
 
   @Post("create")
+
+  
+  //pdf
   @UseInterceptors(
-    FilesInterceptor("files", 10, {
+    FileInterceptor("file", {
       fileFilter: (req, file, callback) => {
         const fileExt = extname(file.originalname).toLowerCase();
         if (fileExt !== ".pdf") {
@@ -62,38 +65,48 @@ export class ApplicantsResumeController {
       }),
     })
   )
-
   // @UseInterceptors(
   //   FilesInterceptor("files", 10, {
-  //     // 'files' is the name of the form field, 10 is the max number of files
+  //     fileFilter: (req, file, callback) => {
+  //       const fileExt = extname(file.originalname).toLowerCase();
+  //       if (fileExt !== ".pdf") {
+  //         return callback(
+  //           new HttpException(
+  //             "Only PDF files are allowed!",
+  //             HttpStatus.BAD_REQUEST
+  //           ),
+  //           false
+  //         );
+  //       }
+  //       callback(null, true);
+  //     },
   //     storage: diskStorage({
   //       destination: (req, file, cb) => {
   //         const uploadPath = path.resolve("./uploads/cv");
-  //         // Check if the directory exists, if not, create it
   //         if (!fs.existsSync(uploadPath)) {
-  //           fs.mkdirSync(uploadPath, { recursive: true }); // Ensure the folder is created
+  //           fs.mkdirSync(uploadPath, { recursive: true });
   //         }
   //         cb(null, uploadPath);
   //       },
   //       filename: (req, file, callback) => {
   //         const name = file.originalname.split(".")[0];
   //         const fileExtName = extname(file.originalname);
-  //         const randdomName = Array(4)
+  //         const randomName = Array(4)
   //           .fill(null)
   //           .map(() => Math.random().toString(36).substring(2, 15))
   //           .join("");
-  //         callback(null, `${name}-${randdomName}${fileExtName}`);
+  //         callback(null, `${name}-${randomName}${fileExtName}`);
   //       },
   //     }),
   //   })
   // )
   async saveResume(
     @Body() saveResume: CreateResumeDto,
-    @UploadedFiles() files: Express.Multer.File[]
+    @UploadedFiles() file: Express.Multer.File
   ): Promise<Resume> {
-    if (files && files.length > 0) {
+    if (file) {
       const extractedDataFromPDF = await this.resumesService.extractDataFromPDF(
-        files[0].path
+        file[0].path
       );
       console.log("controller", extractedDataFromPDF);
       saveResume.name = extractedDataFromPDF.name || saveResume.name;
@@ -110,6 +123,6 @@ export class ApplicantsResumeController {
       saveResume.dateOfBirth =
         extractedDataFromPDF.dateOfBirth || saveResume.dateOfBirth;
     }
-    return this.resumesService.saveResume(saveResume, files);
+    return this.resumesService.saveResume(saveResume, file);
   }
 }

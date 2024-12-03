@@ -46,7 +46,7 @@ export class ApplicantsResumeService {
   }
   async saveResume(
     createResumeDto: CreateResumeDto,
-    @UploadedFiles() files: Express.Multer.File[]
+    @UploadedFiles() file: Express.Multer.File
   ): Promise<Resume> {
     const { attachments, ...resumeData } = createResumeDto;
     const queryRunner =
@@ -55,16 +55,28 @@ export class ApplicantsResumeService {
 
     await queryRunner.startTransaction();
     try {
-      if (files && files.length > 0) {
+
+      
+      if (file) {
         createResumeDto.attachments = createResumeDto.attachments || [];
-        files.forEach((file) => {
-          createResumeDto.attachments.push({
-            attachmentFile: file.filename,
-            attachmentType: file.mimetype,
-            attachmentPath: file.path,
-          });
+        createResumeDto.attachments.push({
+          attachmentFile: file.filename,
+          attachmentType: file.mimetype,
+          attachmentPath: file.path,
         });
       }
+      
+
+      // if (files && files.length > 0) {
+      //   createResumeDto.attachments = createResumeDto.attachments || [];
+      //   files.forEach((file) => {
+      //     createResumeDto.attachments.push({
+      //       attachmentFile: file.filename,
+      //       attachmentType: file.mimetype,
+      //       attachmentPath: file.path,
+      //     });
+      //   });
+      // }
 
       // Create the Resume entity
       const resume = this.resumeRepository.create(resumeData);
