@@ -1,6 +1,7 @@
 import { DataSource, DataSourceOptions } from "typeorm";
 import { Users } from "./entity/Users";
 import { Resume } from "./entity/resume";
+import { NewTest } from "./entity/newTest";
 
 // Export DataSourceOptions directly without instantiating DataSource
 export const AppDataSource: DataSourceOptions = {
@@ -10,9 +11,9 @@ export const AppDataSource: DataSourceOptions = {
   username: "erpdb",
   password: "123456",
   database: "all_services_db",
-  entities: [Users, Resume],
+  entities: [Users, Resume, NewTest],
   migrations: ["./dist/migrations/*.js"],  // Path for TypeScript migrations
-  synchronize: true,
+  synchronize: false,
   logging: true,
 };
 
@@ -33,4 +34,6 @@ export default dataSource;
 
 //npm run typeorm -- migration:run -d ./dist/data-source.js
 //npm run typeorm -- migration:run -d ./src/data-source.ts
+
+//npm run migration:generate -- src/migrations/MigrationName
 
