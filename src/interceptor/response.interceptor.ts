@@ -62,11 +62,12 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, Response<T>> {
     const ctx = context.switchToHttp();
     const request = ctx.getRequest();
     const response = ctx.getResponse();
-    const status = exception.getStatus();
+    const status = 200;
+    const statusCode = ctx.getResponse().statusCode;
 
     return response.status(status).json({
       status: false,
-      statusCode: status,
+      statusCode: statusCode,
       path: request.url,
       message: exception.message,
       timestamp: format(new Date(), "yyyy-MM-dd HH:mm:ss"),

@@ -1,12 +1,16 @@
-// src/resumes/dto/create-resume.dto.ts
+import { IsString, IsEmail, IsDateString, IsArray, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
 
-import {
-  IsString,
-  IsOptional,
-  IsDateString,
-  IsArray,
-  Matches,
-} from "class-validator";
+class CreateResumeAttachmentDto {
+  @IsString()
+  attachmentFile: string;
+
+  @IsString()
+  attachmentType: string;
+
+  @IsString()
+  attachmentPath: string;
+}
 
 export class CreateResumeDto {
   @IsString()
@@ -18,7 +22,7 @@ export class CreateResumeDto {
   @IsString()
   phone: string;
 
-  @IsString()
+  @IsEmail()
   email: string;
 
   @IsString()
@@ -37,18 +41,7 @@ export class CreateResumeDto {
   dateOfBirth: string;
 
   @IsArray()
-  @IsOptional()
-  attachments?: CreateResumeAttachmentDto[]; // Optional field for attachments
-}
-
-export class CreateResumeAttachmentDto {
-  @IsString()
-  @Matches(/^.*\.pdf$/, { message: "Attachment file must be a PDF." })
-  attachmentFile: string;
-
-  @IsString()
-  attachmentType: string;
-
-  @IsString()
-  attachmentPath: string;
+  @ValidateNested({ each: true })
+  @Type(() => CreateResumeAttachmentDto)
+  attachments: CreateResumeAttachmentDto[];
 }
