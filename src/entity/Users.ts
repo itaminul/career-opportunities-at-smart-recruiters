@@ -1,5 +1,5 @@
-import { Column, PrimaryGeneratedColumn } from "typeorm";
-
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+@Entity()
 export class Users {
   @PrimaryGeneratedColumn()
   id: number;
@@ -13,10 +13,12 @@ export class Users {
   activeStatus: boolean;
   @Column({ default: 1 })
   orgId: number;
-  @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
   @Column({ type: "int", nullable: true })
   updated_by: number;
-  @Column({ type: "datetime", nullable: true })
+  @Column({ type: "timestamp", nullable: true })
   updated_at: Date;
 }
+
+

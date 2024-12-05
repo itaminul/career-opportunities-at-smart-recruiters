@@ -21,22 +21,9 @@ export const AppDataSource: DataSourceOptions = {
 const dataSource = new DataSource(AppDataSource);
 export default dataSource;
 
-
-// npm run typeorm -- migration:generate -d ./dist/data-source.js ./src/migrations/CreateEmployeeAndDepartmentTables
-// npm run typeorm -- migration:run -d ./data-source.ts
-//npm run typeorm -- migration:run -d ./dist/data-source.js -- -n <MigrationName>
-
-// npm run migration:generate
-// npm run migration:run
-//npm run typeorm -- migration:run -d ./src/data-source.ts
-
-//npm run typeorm migration:create -n CreateUsersTable
-//npm run typeorm -- migration:run -d ./dist/data-source.js -- - n CreateUsersTable
-
-//npm run typeorm -- migration:run -d ./dist/data-source.js
-//npm run typeorm -- migration:run -d ./src/data-source.ts
-
-//npm run migration:generate -- src/migrations/MigrationName
-
-//npm run typeorm migration:create -n CreateUsersTable
+//npx typeorm-ts-node-commonjs migration:generate src/migrations/CreatePhotoTable -d src/data-source.ts
+//npx typeorm-ts-node-commonjs migration:run -d src/data-source.ts
+//npx typeorm-ts-node-commonjs migration:generate src/migrations/CreateAllTables -d src/data-source.ts --timestamp
+//npx typeorm-ts-node-commonjs migration:generate src/migrations/CreateAllTables -d src/data-source.ts
+//npx typeorm-ts-node-commonjs migration:generate src/migrations/CreateUsersTables -d src/data-source.ts
 

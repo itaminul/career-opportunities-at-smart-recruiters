@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { ResponseInterceptor } from './interceptor/response.interceptor';
 
@@ -50,5 +51,6 @@ async function bootstrap() {
   app.enableCors();
 
   await app.listen(9000);
+
 }
 bootstrap();
