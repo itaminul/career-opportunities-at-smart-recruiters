@@ -4,6 +4,9 @@ import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { ResponseInterceptor } from './interceptor/response.interceptor';
 
 
+import { BadRequestException, ValidationPipe } from '@nestjs/common';
+import { ResponseInterceptor } from './interceptor/response.interceptor';
+
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -51,5 +54,6 @@ async function bootstrap() {
   app.enableCors();
 
   await app.listen(9000);
+
 }
 bootstrap();

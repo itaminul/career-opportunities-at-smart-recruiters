@@ -7,6 +7,7 @@ import {
   ValidateNested,
 } from "class-validator";
 
+
 class CreateResumeAttachmentDto {
   @IsString()
   attachmentFile: string;
@@ -50,4 +51,8 @@ export class CreateResumeDto {
   @ValidateNested({ each: true })
   @Type(() => CreateResumeAttachmentDto)
   attachments: CreateResumeAttachmentDto[];
+
 }
+
+}
+
