@@ -2,10 +2,11 @@ import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { CreateResumeDto } from "./dto/create-resume.dto";
-import { Resume } from "src/entity/resume";
-import { Resume_attachments } from "src/entity/resume_attachments";
 import pdfParse from "pdf-parse";
 import fs from "fs/promises";
+import { Resume } from "src/entity/Resume";
+import { Resume_attachments } from "src/entity/Resume_attachements";
+
 
 @Injectable()
 export class ApplicantsResumeService {

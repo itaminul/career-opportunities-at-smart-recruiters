@@ -1,5 +1,12 @@
-import { IsString, IsEmail, IsDateString, IsArray, ValidateNested } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Type } from "class-transformer";
+import {
+  IsString,
+  IsEmail,
+  IsDateString,
+  IsArray,
+  ValidateNested,
+} from "class-validator";
+
 
 class CreateResumeAttachmentDto {
   @IsString()
@@ -44,4 +51,8 @@ export class CreateResumeDto {
   @ValidateNested({ each: true })
   @Type(() => CreateResumeAttachmentDto)
   attachments: CreateResumeAttachmentDto[];
+
 }
+
+}
+
