@@ -17,8 +17,30 @@ export class ApplicantsResumeService {
     @InjectRepository(Resume_attachments)
     public readonly resumeAttachmentRepository: Repository<Resume_attachments>
   ) {}
+
+  async getAll() {
+    try {
+      return await this.resumeRepository.find({
+        relations: {
+          attachments: true
+        }
+      });
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      // Throw a generic server error if it's not a known error
+      throw new HttpException(
+        "Internal server error: ",
+        // "Internal server error: " + error.message,
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
   async saveResume(createResumeDto: CreateResumeDto): Promise<Resume> {
     const { attachments, ...resumeData } = createResumeDto;
+
     const queryRunner =
       this.resumeRepository.manager.connection.createQueryRunner();
     await queryRunner.startTransaction();
@@ -28,20 +50,19 @@ export class ApplicantsResumeService {
     try {
       // Create the Resume entity
       const resume = this.resumeRepository.create(resumeData);
-
       // Save the Resume entity
-      const savedResume = await queryRunner.manager.save(Resume, resume);
-
+      const savedResume = await this.resumeRepository.save(resume);
+      
       if (attachments && attachments.length > 0) {
         const resumeAttachments = attachments.map((attachment) => {
           return this.resumeAttachmentRepository.create({
             ...attachment,
-            resume: savedResume,
+            resume,
           });
         });
 
         // Save the attachments in the transaction
-        await queryRunner.manager.save(Resume_attachments, resumeAttachments);
+        await this.resumeAttachmentRepository.save(resumeAttachments);
       }
 
       // Commit the transaction

@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -16,6 +17,11 @@ import { extname } from "path";
 @Controller("applicants-resume")
 export class ApplicantsResumeController {
   constructor(public readonly resumesService: ApplicantsResumeService) {}
+
+  @Get()
+  async getAll() {
+    return await this.resumesService.getAll();
+  }
 
   @Post("upload")
   @UseInterceptors(
@@ -40,7 +46,7 @@ export class ApplicantsResumeController {
       await this.resumesService.extractDataFromPDF(filePath);
     return { extractedData, filePath };
   }
-  @Post()
+  @Post("create")
   async saveResume(@Body() saveResume: CreateResumeDto): Promise<Resume> {
   return this.resumesService.saveResume(saveResume);
   }

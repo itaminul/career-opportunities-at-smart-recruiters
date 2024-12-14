@@ -4,8 +4,8 @@ import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { ResponseInterceptor } from './interceptor/response.interceptor';
 
 
-import { BadRequestException, ValidationPipe } from '@nestjs/common';
-import { ResponseInterceptor } from './interceptor/response.interceptor';
+import  'reflect-metadata'
+
 
 
 async function bootstrap() {
