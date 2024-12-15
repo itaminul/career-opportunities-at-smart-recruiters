@@ -12,9 +12,7 @@ import { ApplicantsResumeService } from "./applicants-resume.service";
 import { CreateResumeDto } from "./dto/create-resume.dto";
 
 import {
-  AnyFilesInterceptor,
-  FileInterceptor,
-  FilesInterceptor,
+  AnyFilesInterceptor
 } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { extname } from "path";
