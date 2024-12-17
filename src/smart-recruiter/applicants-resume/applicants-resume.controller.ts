@@ -9,10 +9,11 @@ import {
 import { ApplicantsResumeService } from "./applicants-resume.service";
 import { CreateResumeDto } from "./dto/create-resume.dto";
 
+import { Resume } from "src/entity/resume";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { extname } from "path";
-import { Resume } from "src/entity/Resume";
+
 @Controller("applicants-resume")
 export class ApplicantsResumeController {
   constructor(public readonly resumesService: ApplicantsResumeService) {}
@@ -47,6 +48,6 @@ export class ApplicantsResumeController {
   }
   @Post("create")
   async saveResume(@Body() saveResume: CreateResumeDto): Promise<Resume> {
-    return this.resumesService.saveResume(saveResume);
+  return this.resumesService.saveResume(saveResume);
   }
 }
