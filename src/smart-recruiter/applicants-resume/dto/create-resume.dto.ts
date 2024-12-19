@@ -1,4 +1,4 @@
-import { Type } from "class-transformer";
+import { Transform, Type } from "class-transformer";
 import {
   IsString,
   IsEmail,
@@ -6,6 +6,7 @@ import {
   IsArray,
   ValidateNested,
   IsOptional,
+  IsNotEmpty,
 } from "class-validator";
 
 
@@ -22,6 +23,8 @@ class CreateResumeAttachmentDto {
 }
 
 export class CreateResumeDto {
+
+  @IsNotEmpty()
   @IsString()
   name: string;
   @IsOptional()

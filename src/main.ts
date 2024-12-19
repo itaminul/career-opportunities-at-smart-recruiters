@@ -20,8 +20,8 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
       transform: true,
       exceptionFactory: (validationErrors = []) => {
-        const formatErrors = (errors) => {
-          return errors.map((error) => {
+        const formatErrors = (errors: any) => {
+          return errors.map((error: any) => {
             const constraints = Object.values(error.constraints || {});
             const nestedErrors =
               error.children && error.children.length > 0
