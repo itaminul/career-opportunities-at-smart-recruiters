@@ -9,6 +9,7 @@ import {
 import { ApplicantsResumeService } from "./applicants-resume.service";
 import { CreateResumeDto } from "./dto/create-resume.dto";
 
+import { Resume } from "src/entity/resume";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { extname } from 'path';
@@ -57,5 +58,6 @@ export class ApplicantsResumeController {
   @UseInterceptors(FileInterceptor('file')) 
   async saveResume(@Body() saveResume: CreateResumeDto, @UploadedFile() file: Express.Multer.File): Promise<Resume> {
     return this.resumesService.saveResume(saveResume, file);
+
   }
 }

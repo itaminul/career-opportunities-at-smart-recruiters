@@ -5,9 +5,11 @@ import { Resume } from './entity/Resume';
 import { Resume_attachments } from './entity/Resume_attachements';
 import { JobCandidate } from './entity/job_candidate';
 
+
+// Export DataSourceOptions directly without instantiating DataSource
 export const AppDataSource: DataSourceOptions = {
-  type: 'postgres',
-  host: 'localhost',
+  type: "postgres",
+  host: "localhost",
   port: 5432,
   username: 'erpdb',
   password: '123456',
@@ -27,3 +29,4 @@ export default dataSource;
 //npx typeorm-ts-node-commonjs migration:generate src/migrations/CreateAllTables -d src/data-source.ts --timestamp
 //npx typeorm-ts-node-commonjs migration:generate src/migrations/CreateAllTables -d src/data-source.ts
 //npx typeorm-ts-node-commonjs migration:generate src/migrations/CreateUsersTables -d src/data-source.ts
+
