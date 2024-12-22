@@ -7,11 +7,11 @@ import {
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { CreateResumeDto } from "./dto/create-resume.dto";
-
 import pdfParse from "pdf-parse";
 import fs from "fs/promises";
 import { Resume } from "src/entity/Resume";
 import { Resume_attachments } from "src/entity/Resume_attachements";
+
 
 @Injectable()
 export class ApplicantsResumeService {
@@ -100,8 +100,7 @@ export class ApplicantsResumeService {
 
       // Throw a generic server error if it's not a known error
       throw new HttpException(
-        "Internal server error: ",
-        // "Internal server error: " + error.message,
+        "Internal server error: " + error.message,
         HttpStatus.INTERNAL_SERVER_ERROR
       );
     } finally {
