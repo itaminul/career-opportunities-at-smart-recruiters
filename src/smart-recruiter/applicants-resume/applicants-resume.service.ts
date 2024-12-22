@@ -2,7 +2,7 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
-  UploadedFile,
+  UploadedFiles,
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
@@ -45,30 +45,32 @@ export class ApplicantsResumeService {
   }
   async saveResume(
     createResumeDto: CreateResumeDto,
-    @UploadedFile() file: Express.Multer.File
+    @UploadedFiles() files: Express.Multer.File[]
   ): Promise<Resume> {
     const { attachments, ...resumeData } = createResumeDto;
-
     const queryRunner =
       this.resumeRepository.manager.connection.createQueryRunner();
     await queryRunner.startTransaction();
 
     await queryRunner.startTransaction();
-
     try {
-      if (file) {
+      if (files && files.length > 0) {
         createResumeDto.attachments = createResumeDto.attachments || [];
-        createResumeDto.attachments.push({
-          attachmentFile: file.filename,
-          attachmentType: file.mimetype,
-          attachmentPath: file.path,
+        files.forEach((file) => {
+          createResumeDto.attachments.push({
+            attachmentFile: file.filename,
+            attachmentType: file.mimetype,
+            attachmentPath: file.path,
+          });
         });
       }
+      
       // Create the Resume entity
       const resume = this.resumeRepository.create(resumeData);
       // Save the Resume entity
       const savedResume = await this.resumeRepository.save(resume);
 
+      console.log("saved resume", savedResume);
       if (attachments && attachments.length > 0) {
         const resumeAttachments = attachments.map((attachment) => {
           return this.resumeAttachmentRepository.create({
