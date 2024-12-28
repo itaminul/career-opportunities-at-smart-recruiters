@@ -9,6 +9,7 @@ import {
   IsNotEmpty,
 } from "class-validator";
 
+
 class CreateResumeAttachmentDto {
   @IsOptional()
   @IsString()
@@ -69,4 +70,8 @@ export class CreateResumeDto {
   @ValidateNested({ each: true })
   @Type(() => CreateResumeAttachmentDto)
   attachments: CreateResumeAttachmentDto[];
+
 }
+
+}
+
