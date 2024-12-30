@@ -20,3 +20,5 @@ export class Users {
   @Column({ type: "timestamp", nullable: true })
   updated_at: Date;
 }
+
+

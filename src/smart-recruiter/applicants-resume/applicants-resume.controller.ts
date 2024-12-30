@@ -10,8 +10,8 @@ import {
 } from "@nestjs/common";
 import { ApplicantsResumeService } from "./applicants-resume.service";
 import { CreateResumeDto } from "./dto/create-resume.dto";
-
 import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
+
 import { diskStorage } from "multer";
 import { extname } from "path";
 import * as fs from "fs";
@@ -65,6 +65,7 @@ export class ApplicantsResumeController {
       }),
     })
   )
+
   // @UseInterceptors(
   //   FilesInterceptor("files", 10, {
   //     fileFilter: (req, file, callback) => {
@@ -100,6 +101,7 @@ export class ApplicantsResumeController {
   //     }),
   //   })
   // )
+
   async saveResume(
     @Body() saveResume: CreateResumeDto,
     @UploadedFiles() file: Express.Multer.File
@@ -124,5 +126,11 @@ export class ApplicantsResumeController {
         extractedDataFromPDF.dateOfBirth || saveResume.dateOfBirth;
     }
     return this.resumesService.saveResume(saveResume, file);
+  }
+  @Post("create")
+  @UseInterceptors(FileInterceptor('file')) 
+  async saveResume(@Body() saveResume: CreateResumeDto, @UploadedFile() file: Express.Multer.File): Promise<Resume> {
+    return this.resumesService.saveResume(saveResume, file);
+
   }
 }
