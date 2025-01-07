@@ -46,55 +46,43 @@ export class ApplicantsResumeService {
   }
   async saveResume(
     createResumeDto: CreateResumeDto,
-    @UploadedFiles() file: Express.Multer.File
+    pdfFile: Express.Multer.File,
+    imageFile: Express.Multer.File
   ): Promise<Resume> {
     const { attachments, ...resumeData } = createResumeDto;
     const queryRunner =
       this.resumeRepository.manager.connection.createQueryRunner();
     await queryRunner.startTransaction();
 
-    await queryRunner.startTransaction();
     try {
-
-      
-      if (file) {
-        createResumeDto.attachments = createResumeDto.attachments || [];
-        createResumeDto.attachments.push({
-          attachmentFile: file.filename,
-          attachmentType: file.mimetype,
-          attachmentPath: file.path,
-        });
-      }
-      
-
-      // if (files && files.length > 0) {
-      //   createResumeDto.attachments = createResumeDto.attachments || [];
-      //   files.forEach((file) => {
-      //     createResumeDto.attachments.push({
-      //       attachmentFile: file.filename,
-      //       attachmentType: file.mimetype,
-      //       attachmentPath: file.path,
-      //     });
-      //   });
-      // }
-
-      // Create the Resume entity
+      const attachmentsData = [
+        {
+          attachmentFile: pdfFile.filename,
+          attachmentType: pdfFile.mimetype,
+          attachmentPath: pdfFile.path,
+        },
+        {
+          attachmentFile: imageFile.filename,
+          attachmentType: imageFile.mimetype,
+          attachmentPath: imageFile.path,
+        },
+      ];
       const resume = this.resumeRepository.create(resumeData);
       // Save the Resume entity
       const savedResume = await this.resumeRepository.save(resume);
 
       console.log("saved resume", savedResume);
-      if (attachments && attachments.length > 0) {
-        const resumeAttachments = attachments.map((attachment) => {
-          return this.resumeAttachmentRepository.create({
-            ...attachment,
-            resume,
-          });
+      // if (attachments && attachments.length > 0) {
+      const resumeAttachments = attachmentsData.map((attachment) => {
+        return this.resumeAttachmentRepository.create({
+          ...attachment,
+          resume,
         });
+      });
 
-        // Save the attachments in the transaction
-        await this.resumeAttachmentRepository.save(resumeAttachments);
-      }
+      // Save the attachments in the transaction
+      await this.resumeAttachmentRepository.save(resumeAttachments);
+      //   }
 
       // Commit the transaction
       await queryRunner.commitTransaction();
@@ -146,8 +134,7 @@ export class ApplicantsResumeService {
       const city = text.match(/City:\s*(.*)/)?.[1]?.trim() || "Unknown";
       const district = text.match(/District:\s*(.*)/)?.[1]?.trim() || "Unknown";
       const division = text.match(/Division:\s*(.*)/)?.[1]?.trim() || "Unknown";
-      const dateOfBirth =
-        text.match(/birth:\s*(.*)/)?.[1]?.trim() || "Unknown";
+      const dateOfBirth = text.match(/birth:\s*(.*)/)?.[1]?.trim() || "Unknown";
 
       return {
         name,
