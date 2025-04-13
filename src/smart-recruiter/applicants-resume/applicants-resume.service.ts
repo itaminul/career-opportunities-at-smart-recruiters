@@ -2,14 +2,16 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
+  UploadedFile,
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { CreateResumeDto } from "./dto/create-resume.dto";
 
-import * as fs from "fs";
-import * as pdfParse from "pdf-parse";
-import { Resume } from "src/entity/Resume";
+import pdfParse from "pdf-parse";
+import fs from "fs/promises";
+
+import { Resume } from "src/entity/resume";
 import { Resume_attachments } from "src/entity/Resume_attachements";
 
 
@@ -27,7 +29,7 @@ export class ApplicantsResumeService {
     try {
       return await this.resumeRepository.find({
         relations: {
-          attachments: true,
+        //  attachments: true,
         },
       });
     } catch (error) {
@@ -45,43 +47,41 @@ export class ApplicantsResumeService {
   }
   async saveResume(
     createResumeDto: CreateResumeDto,
-    pdfFile: Express.Multer.File,
-    imageFile: Express.Multer.File
+    @UploadedFile() file: Express.Multer.File
   ): Promise<Resume> {
     const { attachments, ...resumeData } = createResumeDto;
+
     const queryRunner =
       this.resumeRepository.manager.connection.createQueryRunner();
     await queryRunner.startTransaction();
 
+    await queryRunner.startTransaction();
+
     try {
-      const attachmentsData = [
-        {
-          attachmentFile: pdfFile.filename,
-          attachmentType: pdfFile.mimetype,
-          attachmentPath: pdfFile.path,
-        },
-        {
-          attachmentFile: imageFile.filename,
-          attachmentType: imageFile.mimetype,
-          attachmentPath: imageFile.path,
-        },
-      ];
+      if (file) {
+        createResumeDto.attachments = createResumeDto.attachments || [];
+        createResumeDto.attachments.push({
+          attachmentFile: file.filename,
+          attachmentType: file.mimetype,
+          attachmentPath: file.path,
+        });
+      }
+      // Create the Resume entity
       const resume = this.resumeRepository.create(resumeData);
       // Save the Resume entity
       const savedResume = await this.resumeRepository.save(resume);
 
-      console.log("saved resume", savedResume);
-      // if (attachments && attachments.length > 0) {
-      const resumeAttachments = attachmentsData.map((attachment) => {
-        return this.resumeAttachmentRepository.create({
-          ...attachment,
-          resume,
+      if (attachments && attachments.length > 0) {
+        const resumeAttachments = attachments.map((attachment) => {
+          return this.resumeAttachmentRepository.create({
+            ...attachment,
+           // resume,
+          });
         });
-      });
 
-      // Save the attachments in the transaction
-      await this.resumeAttachmentRepository.save(resumeAttachments);
-      //   }
+        // Save the attachments in the transaction
+        await this.resumeAttachmentRepository.save(resumeAttachments);
+      }
 
       // Commit the transaction
       await queryRunner.commitTransaction();
@@ -100,7 +100,8 @@ export class ApplicantsResumeService {
 
       // Throw a generic server error if it's not a known error
       throw new HttpException(
-        "Internal server error: " + error.message,
+        "Internal server error: ",
+        // "Internal server error: " + error.message,
         HttpStatus.INTERNAL_SERVER_ERROR
       );
     } finally {
@@ -110,46 +111,14 @@ export class ApplicantsResumeService {
   }
 
   async extractDataFromPDF(filePath: string) {
-    try {
-      // Read the file as a Buffer
-      const buffer = await fs.promises.readFile(filePath);
+    const buffer = await fs.readFile(filePath);
+    const pdfData = await pdfParse(buffer); 
+    const text = pdfData.text;
 
-      // Use pdf-parse to extract text from the PDF buffer
-      const pdfData = await pdfParse(buffer);
+    const name = text.match(/Name:\s*(.*)/)?.[1]?.trim() || "Unknown";
+    const email = text.match(/Email:\s*(.*)/)?.[1]?.trim() || "Unknown";
+    const phone = text.match(/Phone:\s*(.*)/)?.[1]?.trim() || "Unknown";
 
-      // Extract text from the parsed PDF
-      const text = pdfData.text;
-      console.log("service", text);
-      // Use regex to extract specific fields from the text
-
-      const name = text.match(/Name:\s*(.*)/)?.[1]?.trim() || "Unknown";
-      const address = text.match(/Address:\s*(.*)/)?.[1]?.trim() || "Unknown";
-      // const permanentAddress = text.match(/Permanent Address:\s*(.*)/)?.[1]?.trim() || "Unknown";
-      const email = text.match(/Email:\s*(.*)/)?.[1]?.trim() || "Unknown";
-      const phone = text.match(/Phone:\s*(.*)/)?.[1]?.trim() || "Unknown";
-      const mobile = text.match(/Mobile:\s*(.*)/)?.[1]?.trim() || "Unknown";
-      const experience =
-        text.match(/Experience:\s*(.*)/)?.[1]?.trim() || "Unknown";
-      const city = text.match(/City:\s*(.*)/)?.[1]?.trim() || "Unknown";
-      const district = text.match(/District:\s*(.*)/)?.[1]?.trim() || "Unknown";
-      const division = text.match(/Division:\s*(.*)/)?.[1]?.trim() || "Unknown";
-      const dateOfBirth = text.match(/birth:\s*(.*)/)?.[1]?.trim() || "Unknown";
-
-      return {
-        name,
-        address,
-        email,
-        phone,
-        mobile,
-        city,
-        experience,
-        district,
-        division,
-        dateOfBirth,
-      };
-    } catch (error) {
-      console.error("Error reading or parsing PDF:", error);
-      throw new Error("Error processing the PDF file.");
-    }
+    return { name, email, phone };
   }
 }

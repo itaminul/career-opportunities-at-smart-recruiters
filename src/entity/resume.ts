@@ -1,6 +1,8 @@
-import { Column, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { Resume_attachments } from "./resume_attachments";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Resume_attachments } from "./Resume_attachements";
+import { JobCandidate } from "./job_candidate";
 
+@Entity("resume")
 export class Resume {
   @PrimaryGeneratedColumn()
   id: number;
@@ -22,13 +24,24 @@ export class Resume {
   division: string;
   @Column()
   dateOfBirth: string;
-  @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
+  @Column()
+  currentSalary: number;
+  @Column()
+  expectedSalary: number;
+  @Column()
+  noticePeriod: string;
+  @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   created_at: Date;
   @Column({ type: "int", nullable: true })
   updated_by: number;
-  @Column({ type: "datetime", nullable: true })
+  @Column({ type: "timestamp", nullable: true })
   updated_at: Date;
 
-  @OneToMany(() => Resume_attachments, (attachment) => attachment.resume)
-  attachments: Resume_attachments[]
+  @OneToMany(() => Resume_attachments, (attachment) => attachment.resume, {
+    nullable: true,
+  })
+  resumeAttachments: Resume_attachments[];
+
+  @OneToMany(() => JobCandidate, (jobCandidate) => jobCandidate.resume)
+  jobCandidate: JobCandidate[];
 }

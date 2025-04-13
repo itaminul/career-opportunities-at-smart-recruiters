@@ -5,7 +5,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
-import { Resume } from "./Resume";
+import { Resume } from "./resume";
 
 @Entity("job_candidate")
 export class JobCandidate {
@@ -31,7 +31,8 @@ export class JobCandidate {
   updated_by: number;
   @Column({ type: "timestamp", nullable: true })
   updated_at: Date;
-  @ManyToOne(() => Resume, (resum) => resum.jobCan, { nullable: true })
+  
+  @ManyToOne(() => Resume, (resum) => resum.jobCandidate, { nullable: true })
   @JoinColumn({ name: "resume_id" })
   resume: Resume;
 }
