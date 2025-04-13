@@ -5,7 +5,9 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Resume } from './Resume';
+import { Resume } from './resume';
+
+
 @Entity('resume_attachments')
 export class Resume_attachments {
   @PrimaryGeneratedColumn()
@@ -23,7 +25,7 @@ export class Resume_attachments {
   @Column({ type: 'timestamp', nullable: true })
   updated_at: Date;
 
-  @ManyToOne(() => Resume, (resume) => resume.attachments, { nullable: true })
-  @JoinColumn({ name: 'resume_id' })
+  @ManyToOne(() => Resume, (resume) => resume.resumeAttachments, { nullable: true })
+  @JoinColumn({ name: 'resume_id' }) // Specify foreign key column name here
   resume: Resume;
 }

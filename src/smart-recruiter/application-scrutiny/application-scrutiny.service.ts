@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Resume } from "src/entity/Resume";
+import { Resume } from "src/entity/resume";
+
 import { Resume_attachments } from "src/entity/Resume_attachements";
 import { Repository } from "typeorm";
 
