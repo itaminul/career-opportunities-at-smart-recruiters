@@ -9,7 +9,6 @@ import {
   IsNotEmpty,
 } from "class-validator";
 
-
 class CreateResumeAttachmentDto {
   @IsOptional()
   @IsString()
@@ -23,7 +22,7 @@ class CreateResumeAttachmentDto {
 }
 
 export class CreateResumeDto {
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   name: string;
   @IsOptional()
@@ -46,8 +45,11 @@ export class CreateResumeDto {
   present_salary: string;
   @IsOptional()
   @IsString()
-  expected_salary: string;
-
+  expectedSalary: number;
+  @IsString()
+  noticePeriod: string;
+  @IsOptional()
+  currentSalary: number;
   @IsOptional()
   @IsString()
   city: string;
@@ -70,8 +72,4 @@ export class CreateResumeDto {
   @ValidateNested({ each: true })
   @Type(() => CreateResumeAttachmentDto)
   attachments: CreateResumeAttachmentDto[];
-
 }
-
-
-

@@ -1,9 +1,4 @@
-import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-  UploadedFile,
-} from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { CreateResumeDto } from "./dto/create-resume.dto";
@@ -11,9 +6,8 @@ import { CreateResumeDto } from "./dto/create-resume.dto";
 import pdfParse from "pdf-parse";
 import fs from "fs/promises";
 
-import { Resume } from "src/entity/resume";
 import { Resume_attachments } from "src/entity/Resume_attachements";
-
+import { Resume } from "src/entity/resume";
 
 @Injectable()
 export class ApplicantsResumeService {
@@ -29,7 +23,7 @@ export class ApplicantsResumeService {
     try {
       return await this.resumeRepository.find({
         relations: {
-        //  attachments: true,
+          //  attachments: true,
         },
       });
     } catch (error) {
@@ -47,75 +41,69 @@ export class ApplicantsResumeService {
   }
   async saveResume(
     createResumeDto: CreateResumeDto,
-    @UploadedFile() file: Express.Multer.File
+    file: Express.Multer.File
   ): Promise<Resume> {
-    const { attachments, ...resumeData } = createResumeDto;
-
     const queryRunner =
       this.resumeRepository.manager.connection.createQueryRunner();
     await queryRunner.startTransaction();
 
-    await queryRunner.startTransaction();
-
     try {
+     // console.log("file", file);
       if (file) {
         createResumeDto.attachments = createResumeDto.attachments || [];
         createResumeDto.attachments.push({
-          attachmentFile: file.filename,
+          attachmentFile: file.fieldname,
           attachmentType: file.mimetype,
           attachmentPath: file.path,
         });
       }
+
+      //console.log("createResumeDto", createResumeDto);
+
       // Create the Resume entity
+      const resumeData = {
+        ...createResumeDto,
+      };
+      delete resumeData.attachments;
       const resume = this.resumeRepository.create(resumeData);
-      // Save the Resume entity
       const savedResume = await this.resumeRepository.save(resume);
 
-      if (attachments && attachments.length > 0) {
-        const resumeAttachments = attachments.map((attachment) => {
-          return this.resumeAttachmentRepository.create({
-            ...attachment,
-           // resume,
-          });
-        });
-
-        // Save the attachments in the transaction
+      if (
+        createResumeDto.attachments &&
+        createResumeDto.attachments.length > 0
+      ) {
+        const resumeAttachments = createResumeDto.attachments.map(
+          (attachment) =>
+            this.resumeAttachmentRepository.create({
+              ...attachment,
+              resume,
+            })
+        );
         await this.resumeAttachmentRepository.save(resumeAttachments);
       }
 
-      // Commit the transaction
       await queryRunner.commitTransaction();
 
       return savedResume;
     } catch (error) {
-      // Log the error for debugging purposes
       console.error("Error during transaction:", error);
-
-      // Rollback transaction if there was an error
       await queryRunner.rollbackTransaction();
-
-      if (error instanceof HttpException) {
-        throw error;
-      }
-
-      // Throw a generic server error if it's not a known error
       throw new HttpException(
-        "Internal server error: ",
-        // "Internal server error: " + error.message,
+        "Internal server error: " + error.message,
         HttpStatus.INTERNAL_SERVER_ERROR
       );
     } finally {
-      // Release the query runner to avoid memory leaks
       await queryRunner.release();
     }
   }
 
   async extractDataFromPDF(filePath: string) {
     const buffer = await fs.readFile(filePath);
-    const pdfData = await pdfParse(buffer); 
+    const pdfData = await pdfParse(buffer);
     const text = pdfData.text;
 
     const name = text.match(/Name:\s*(.*)/)?.[1]?.trim() || "Unknown";
+    console.log("text", text);
     const email = text.match(/Email:\s*(.*)/)?.[1]?.trim() || "Unknown";
     const phone = text.match(/Phone:\s*(.*)/)?.[1]?.trim() || "Unknown";
 
