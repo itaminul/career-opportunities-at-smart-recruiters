@@ -5,8 +5,7 @@ import {
   IsDateString,
   IsArray,
   ValidateNested,
-  IsOptional,
-  IsNotEmpty,
+  IsOptional
 } from "class-validator";
 
 class CreateResumeAttachmentDto {
