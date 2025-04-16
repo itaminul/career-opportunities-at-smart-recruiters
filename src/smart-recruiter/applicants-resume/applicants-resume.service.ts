@@ -63,6 +63,7 @@ export class ApplicantsResumeService {
         experience: "Unknown",
         education: "Unknown",
         skills: "Unknown",
+        city: "Unknown"
       };
 
       if (file.mimetype === "application/pdf") {
@@ -82,6 +83,7 @@ export class ApplicantsResumeService {
         experience: createResumeDto.experience || extractedData.experience,
         education: extractedData.education, // New field
         skills: extractedData.skills, // New field
+        city: extractedData.city, // New field
       };
 
       console.log("Merged data:", JSON.stringify(mergedData, null, 2));
