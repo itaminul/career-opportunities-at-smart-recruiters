@@ -49,9 +49,9 @@ async function bootstrap() {
   // Global response interceptor
   app.useGlobalFilters(new AllExceptionsFilter());
   // app.useGlobalFilters(new ExceptionFilters());
-  app.useGlobalInterceptors(new ResponseInterceptor());
+  // app.useGlobalInterceptors(new ResponseInterceptor());
   app.useGlobalPipes(new ValidationPipe());
-  app.useGlobalFilters(new MulterExceptionFilter());
+  // app.useGlobalFilters(new MulterExceptionFilter());
   // Global prefix for all routes
   app.setGlobalPrefix("/api");
   app.enableCors();

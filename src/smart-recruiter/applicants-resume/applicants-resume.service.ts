@@ -50,7 +50,7 @@ export class ApplicantsResumeService {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
-
+    const filec = `${process.env.API_BASE_URL}/${file.path}`;
     try {
       // Extract data from PDF if it's a PDF file
       let extractedData = {
