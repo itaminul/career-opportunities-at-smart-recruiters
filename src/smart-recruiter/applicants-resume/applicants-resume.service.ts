@@ -26,7 +26,7 @@ export class ApplicantsResumeService {
     try {
       return await this.resumeRepository.find({
         relations: {
-          //  attachments: true,
+          resumeAttachments: true,
         },
       });
     } catch (error) {
@@ -60,7 +60,7 @@ export class ApplicantsResumeService {
         mobile: "Unknown",
         district: "Unknown",
         division: "Unknown",
-        dateOfBirth: "Unknown",        
+        dateOfBirth: "Unknown",
         address: "Unknown",
         experience: "Unknown",
         education: "Unknown",
@@ -81,13 +81,13 @@ export class ApplicantsResumeService {
         phone: createResumeDto.phone || extractedData.phone,
         mobile: createResumeDto.mobile || extractedData.mobile,
         district: createResumeDto.district || extractedData.district,
-        division: createResumeDto.division || extractedData.division,     
-        dateOfBirth: createResumeDto.dateOfBirth || extractedData.dateOfBirth, 
+        division: createResumeDto.division || extractedData.division,
+        dateOfBirth: createResumeDto.dateOfBirth || extractedData.dateOfBirth,
         address: createResumeDto.address || extractedData.address,
         experience: createResumeDto.experience || extractedData.experience,
-        education: extractedData.education, 
-        skills: extractedData.skills, 
-        city: extractedData.city, 
+        education: extractedData.education,
+        skills: extractedData.skills,
+        city: extractedData.city,
       };
 
       // Prepare attachment data
