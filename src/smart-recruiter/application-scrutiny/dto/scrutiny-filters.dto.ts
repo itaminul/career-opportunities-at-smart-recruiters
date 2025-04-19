@@ -1,4 +1,4 @@
-import { IsOptional, IsNumber, IsString } from 'class-validator';
+import { IsOptional, IsNumber, IsString } from "class-validator";
 
 export class ScrutinyFiltersDto {
   @IsOptional()
@@ -16,6 +16,13 @@ export class ScrutinyFiltersDto {
   @IsOptional()
   @IsNumber()
   expectedSalary?: number;
+
+  @IsOptional()
+  @IsNumber()
+  currentSalary: number;
+  @IsOptional()
+  @IsString()
+  division: string;
 
   @IsOptional()
   @IsNumber()
