@@ -11,7 +11,8 @@ export class ApplicationScrutinyController {
   @Post()
   async getScrutinyApplicaton(@Body() filters: ScrutinyFiltersDto) {
     try {
-      const results =  await this.appScrutinyService.getScrutinyApplication(filters);
+      const results =
+        await this.appScrutinyService.getScrutinyApplication(filters);
       return results;
     } catch (error) {
       throw error;
