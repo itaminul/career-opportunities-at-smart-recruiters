@@ -1,18 +1,7 @@
-import { IsOptional, IsNumber, IsString } from "class-validator";
+import { Type } from "class-transformer";
+import { IsOptional, IsNumber, IsString, Min, Max } from "class-validator";
 
 export class ScrutinyFiltersDto {
-  @IsOptional()
-  @IsNumber()
-  age?: number;
-
-  @IsOptional()
-  @IsNumber()
-  minAge?: number;
-
-  @IsOptional()
-  @IsNumber()
-  maxAge?: number;
-
   @IsOptional()
   @IsNumber()
   expectedSalary?: number;
@@ -39,4 +28,28 @@ export class ScrutinyFiltersDto {
   @IsOptional()
   @IsString()
   district?: string;
+  @IsOptional()
+  @IsString()
+  dateOfBirth?: string;
+  @IsOptional()
+  @IsString()
+  ageOfDateTo?: string;
+
+  @IsOptional()
+  @IsNumber()
+  @Max(100)
+  @Type(() => Number)
+  age?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Type(() => Number)
+  minAge?: number; // For age range (minimum age)
+
+  @IsOptional()
+  @IsNumber()
+  @Max(100)
+  @Type(() => Number)
+  maxAge?: number; // For age range (maximum age)
 }
