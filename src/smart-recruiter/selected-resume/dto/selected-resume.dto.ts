@@ -1,6 +1,16 @@
-import { IsOptional, IsString, IsEmail, IsDateString, IsNumber } from "class-validator";
+import {
+  IsOptional,
+  IsString,
+  IsEmail,
+  IsDateString,
+  IsNumber,
+} from "class-validator";
+
 
 export class SelectedResumeDto {
+  @IsOptional()
+  @IsNumber()
+  id: number;
   @IsOptional()
   @IsString()
   name: string;
@@ -25,6 +35,7 @@ export class SelectedResumeDto {
   @IsOptional()
   @IsString()
   expectedSalary: number;
+  @IsOptional()
   @IsString()
   noticePeriod: string;
   @IsOptional()
@@ -48,5 +59,5 @@ export class SelectedResumeDto {
 
   @IsOptional()
   @IsNumber()
-  applicationStatus: number 
+  applicationStatus: number;
 }

@@ -1,16 +1,13 @@
-import {
-  Column,
-  Entity,
-  ManyToMany,
-  PrimaryGeneratedColumn,
-} from "typeorm";
+import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Resume } from "./resume";
 
 @Entity("selectedresume")
 export class SelectedResume {
   @PrimaryGeneratedColumn()
   id: number;
-  @Column()
+  @Column({ nullable: true })
+  resumeId: number;
+  @Column({nullable: true})
   name: string;
   @Column({ nullable: true })
   address: string;
