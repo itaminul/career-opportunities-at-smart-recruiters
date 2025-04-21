@@ -12,6 +12,9 @@ export class ScrutinyFiltersDto {
   @IsOptional()
   @IsString()
   division: string;
+  @IsOptional()
+  @IsString()
+  positionName: string;
 
   @IsOptional()
   @IsNumber()
