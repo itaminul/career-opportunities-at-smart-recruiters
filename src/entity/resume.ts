@@ -36,7 +36,7 @@ export class Resume {
   @Column({ type: "int", nullable: true })
   updated_by: number;
   @Column({ type: "timestamp", nullable: true })
-   updated_at: Date;
+  updated_at: Date;
   @Column({ nullable: true })
   positionName?: string;
   @Column({ nullable: true })
@@ -74,7 +74,6 @@ export class Resume {
   @Column({ nullable: true })
   nameOfCV: string;
 
-
   age?: number;
 
   @OneToMany(() => Resume_attachments, (attachment) => attachment.resume, {
@@ -87,4 +86,15 @@ export class Resume {
 
   @OneToMany(() => SelectedResume, (selectdRe) => selectdRe.selectedresume)
   selectedresume: SelectedResume[];
+
+  @Column({ nullable: false, unique: true })
+  username: string;
+  @Column({ nullable: false })
+  password: string;
+  @Column({ default: "candidate" })
+  roleName: string;
+  @Column({ default: true })
+  activeStatus: boolean;
+  @Column({ default: 1 })
+  orgId: number;
 }

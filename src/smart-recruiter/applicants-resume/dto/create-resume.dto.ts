@@ -5,7 +5,8 @@ import {
   IsDateString,
   IsArray,
   ValidateNested,
-  IsOptional
+  IsOptional,
+  IsNotEmpty
 } from "class-validator";
 
 class CreateResumeAttachmentDto {
@@ -24,6 +25,15 @@ export class CreateResumeDto {
   @IsOptional()
   @IsString()
   name: string;
+
+  @IsNotEmpty()
+  @IsString()
+  username: string;
+
+  @IsNotEmpty()
+  @IsString()
+  password: string;  
+
   @IsOptional()
   @IsString()
   address: string;
