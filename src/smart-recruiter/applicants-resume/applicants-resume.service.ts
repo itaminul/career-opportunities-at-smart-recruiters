@@ -52,24 +52,24 @@ export class ApplicantsResumeService {
     await queryRunner.startTransaction();
 
     try {
-      console.log("Processing file:", file.originalname);
-
       // Extract data from PDF if it's a PDF file
       let extractedData = {
         name: "Unknown",
         email: "Unknown",
         phone: "Unknown",
+        mobile: "Unknown",
+        district: "Unknown",
+        division: "Unknown",
+        dateOfBirth: "Unknown",        
         address: "Unknown",
         experience: "Unknown",
         education: "Unknown",
         skills: "Unknown",
-        city: "Unknown"
+        city: "Unknown",
       };
 
       if (file.mimetype === "application/pdf") {
-        console.log("Extracting data from PDF file");
         extractedData = await this.extractDataFromPDF(file.path);
-        console.log("Extracted data:", JSON.stringify(extractedData, null, 2));
       }
 
       // Merge extracted data with provided data
@@ -79,14 +79,16 @@ export class ApplicantsResumeService {
         name: createResumeDto.name || extractedData.name,
         email: createResumeDto.email || extractedData.email,
         phone: createResumeDto.phone || extractedData.phone,
+        mobile: createResumeDto.mobile || extractedData.mobile,
+        district: createResumeDto.district || extractedData.district,
+        division: createResumeDto.division || extractedData.division,     
+        dateOfBirth: createResumeDto.dateOfBirth || extractedData.dateOfBirth, 
         address: createResumeDto.address || extractedData.address,
         experience: createResumeDto.experience || extractedData.experience,
-        education: extractedData.education, // New field
-        skills: extractedData.skills, // New field
-        city: extractedData.city, // New field
+        education: extractedData.education, 
+        skills: extractedData.skills, 
+        city: extractedData.city, 
       };
-
-      console.log("Merged data:", JSON.stringify(mergedData, null, 2));
 
       // Prepare attachment data
       if (file) {
@@ -119,7 +121,6 @@ export class ApplicantsResumeService {
       await queryRunner.commitTransaction();
       return savedResume;
     } catch (error) {
-      console.error("Error during transaction:", error);
       await queryRunner.rollbackTransaction();
       throw new HttpException(
         `Internal server error: ${error.message}`,
@@ -132,18 +133,9 @@ export class ApplicantsResumeService {
 
   async extractDataFromPDF(filePath: string) {
     try {
-      console.log("Reading PDF file:", filePath);
       const buffer = await fs.readFile(filePath);
-
-      console.log("Parsing PDF content...");
       const pdfData = await pdfParse(buffer);
       const text = pdfData.text;
-
-      console.log("PDF text length:", text.length);
-      console.log("First 500 characters of PDF:", text.substring(0, 500));
-
-      // More aggressive pattern matching for common resume fields
-      // Try multiple patterns for each field to increase chances of finding a match
 
       // Extract name - try multiple patterns
       let name =
@@ -162,16 +154,13 @@ export class ApplicantsResumeService {
       let phone =
         this.extractField(
           text,
-          /(?:Phone|Mobile|Tel|Telephone):?\s*(\+?[\d\s().-]{10,20})/i
+          /(?:Phone|Tel|Telephone):?\s*(\+?[\d\s().-]{10,20})/i
         ) ||
         this.extractPhone(text) ||
         "Unknown";
 
       let mobile =
-        this.extractField(
-          text,
-          /(?:Phone|Mobile|Tel|Telephone):?\s*(\+?[\d\s().-]{10,20})/i
-        ) ||
+        this.extractField(text, /(?:Mobile):?\s*(\+?[\d\s().-]{10,20})/i) ||
         this.extractMobile(text) ||
         "Unknown";
 
@@ -201,7 +190,6 @@ export class ApplicantsResumeService {
       // Extract skills
       let skills = this.extractSkills(text) || "Unknown";
       let city = this.extractCity(text) || "Unknown";
-      console.log('city:', city);
       return {
         name,
         email,
@@ -217,7 +205,6 @@ export class ApplicantsResumeService {
         city,
       };
     } catch (error) {
-      console.error("Error extracting PDF data:", error);
       return {
         name: "Unknown",
         email: "Unknown",
@@ -246,7 +233,6 @@ export class ApplicantsResumeService {
     const matches = text.match(emailRegex);
 
     if (matches && matches.length > 0) {
-      console.log("Found email:", matches[0]);
       return matches[0];
     }
     return null;
@@ -264,7 +250,6 @@ export class ApplicantsResumeService {
     for (const pattern of phonePatterns) {
       const matches = text.match(pattern);
       if (matches && matches.length > 0) {
-        console.log("Found phone:", matches[0]);
         return matches[0];
       }
     }
@@ -283,7 +268,6 @@ export class ApplicantsResumeService {
     for (const pattern of phonePatterns) {
       const matches = text.match(pattern);
       if (matches && matches.length > 0) {
-        console.log("Found phone:", matches[0]);
         return matches[0];
       }
     }
@@ -302,7 +286,6 @@ export class ApplicantsResumeService {
     for (const pattern of addressPatterns) {
       const match = text.match(pattern);
       if (match && match[1]) {
-        console.log("Found address:", match[1]);
         return match[1].trim();
       }
     }
@@ -320,7 +303,6 @@ export class ApplicantsResumeService {
           postalCodeIndex - 50,
           postalCodeIndex + 20
         );
-        console.log("Found address by postal code:", addressCandidate);
         return addressCandidate.trim();
       }
     }
@@ -475,7 +457,6 @@ export class ApplicantsResumeService {
     for (const pattern of experienceSectionPatterns) {
       const match = text.match(pattern);
       if (match && match[1] && match[1].trim().length > 10) {
-        console.log("Found experience section");
         return match[1].trim().substring(0, 500); // Limit to 500 chars
       }
     }
@@ -489,7 +470,6 @@ export class ApplicantsResumeService {
     for (const pattern of yearsPatterns) {
       const match = text.match(pattern);
       if (match && match[1]) {
-        console.log("Found years of experience:", match[1]);
         return `${match[1]} years`;
       }
     }
@@ -507,7 +487,6 @@ export class ApplicantsResumeService {
     for (const pattern of educationSectionPatterns) {
       const match = text.match(pattern);
       if (match && match[1] && match[1].trim().length > 10) {
-        console.log("Found education section");
         return match[1].trim().substring(0, 500); // Limit to 500 chars
       }
     }
@@ -518,7 +497,6 @@ export class ApplicantsResumeService {
     );
 
     if (degreeMatch) {
-      console.log("Found degree mention:", degreeMatch[0]);
       return degreeMatch[0];
     }
 
@@ -535,7 +513,6 @@ export class ApplicantsResumeService {
     for (const pattern of skillsSectionPatterns) {
       const match = text.match(pattern);
       if (match && match[1] && match[1].trim().length > 10) {
-        console.log("Found skills section");
         return match[1].trim().substring(0, 500); // Limit to 500 chars
       }
     }
@@ -546,13 +523,11 @@ export class ApplicantsResumeService {
     );
 
     if (skillListMatch && skillListMatch[1]) {
-      console.log("Found skill list");
       return skillListMatch[1].trim();
     }
 
     return null;
   }
-
 
   private extractCity(text: string): string | null {
     // Multiple patterns to extract District
