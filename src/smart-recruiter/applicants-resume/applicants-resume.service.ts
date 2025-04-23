@@ -6,6 +6,7 @@ import { CreateResumeDto } from "./dto/create-resume.dto";
 import { Resume_attachments } from "src/entity/Resume_attachements";
 import { Resume } from "src/entity/resume";
 import * as fs from "fs/promises";
+import { UniqueValidationService } from "src/validators/unique-fields.validator";
 
 const pdfParse = require("pdf-parse") as (
   buffer: Buffer
@@ -14,12 +15,14 @@ const pdfParse = require("pdf-parse") as (
 @Injectable()
 export class ApplicantsResumeService {
   connection: any;
+
   constructor(
     @InjectRepository(Resume)
     public readonly resumeRepository: Repository<Resume>,
     @InjectRepository(Resume_attachments)
     public readonly resumeAttachmentRepository: Repository<Resume_attachments>,
-    private dataSource: DataSource
+    private dataSource: DataSource,
+    private readonly uniqueValidationService: UniqueValidationService
   ) {}
 
   async getAll() {
@@ -51,75 +54,107 @@ export class ApplicantsResumeService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     const filec = `${process.env.API_BASE_URL}/${file.path}`;
+
     try {
-      // Extract data from PDF if it's a PDF file
-      let extractedData = {
-        name: "Unknown",
-        email: "Unknown",
-        phone: "Unknown",
-        mobile: "Unknown",
-        district: "Unknown",
-        division: "Unknown",
-        dateOfBirth: "Unknown",
-        address: "Unknown",
-        experience: "Unknown",
-        education: "Unknown",
-        skills: "Unknown",
-        city: "Unknown",
-      };
+      const [isUsernameUnique] = await Promise.all([
+        this.uniqueValidationService.isFieldUnique(
+          "username",
+          createResumeDto.username
+        ),
+        // this.uniqueValidationService.isFieldUnique('email', createResumeDto.email),
+      ]);
 
-      if (file.mimetype === "application/pdf") {
-        extractedData = await this.extractDataFromPDF(file.path);
-      }
-
-      // Merge extracted data with provided data
-      // Only use extracted data if the field is not already provided in createResumeDto
-      const mergedData = {
-        ...createResumeDto,
-        name: createResumeDto.name || extractedData.name,
-        email: createResumeDto.email || extractedData.email,
-        phone: createResumeDto.phone || extractedData.phone,
-        mobile: createResumeDto.mobile || extractedData.mobile,
-        district: createResumeDto.district || extractedData.district,
-        division: createResumeDto.division || extractedData.division,
-        dateOfBirth: createResumeDto.dateOfBirth || extractedData.dateOfBirth,
-        address: createResumeDto.address || extractedData.address,
-        experience: createResumeDto.experience || extractedData.experience,
-        education: extractedData.education,
-        skills: extractedData.skills,
-        city: extractedData.city,
-      };
-
-      // Prepare attachment data
-      if (file) {
-        mergedData.attachments = mergedData.attachments || [];
-        mergedData.attachments.push({
-          attachmentFile: file.originalname,
-          attachmentType: file.mimetype,
-          attachmentPath: file.path,
-        });
-      }
-
-      // Create the Resume entity
-      const resumeData = { ...mergedData };
-      delete resumeData.attachments;
-
-      const resume = this.resumeRepository.create(resumeData);
-      const savedResume = await queryRunner.manager.save(resume);
-
-      // Save attachments
-      if (mergedData.attachments && mergedData.attachments.length > 0) {
-        const resumeAttachments = mergedData.attachments.map((attachment) =>
-          this.resumeAttachmentRepository.create({
-            ...attachment,
-            resume: savedResume,
-          })
+      if (!isUsernameUnique) {
+        throw new HttpException(
+          {
+            success: false,
+            message: "Username alreax exist please try another",
+            statusCode: HttpStatus.CONFLICT,
+            timestamp: new Date().toISOString(),
+          },
+          HttpStatus.CONFLICT
         );
-        await queryRunner.manager.save(resumeAttachments);
-      }
+      } else {
+        // if (!isUsernameUnique || !isEmailUnique) {
+        //   throw new HttpException({
+        //     statusCode: HttpStatus.CONFLICT,
+        //     message: 'Validation failed',
+        //     errors: {
+        //       username: isUsernameUnique ? undefined : 'Username already exists',
+        //       email: isEmailUnique ? undefined : 'Email already exists',
+        //     },
+        //   }, HttpStatus.CONFLICT);
+        // }
 
-      await queryRunner.commitTransaction();
-      return savedResume;
+        // Extract data from PDF if it's a PDF file
+        let extractedData = {
+          name: "Unknown",
+          email: "Unknown",
+          phone: "Unknown",
+          mobile: "Unknown",
+          district: "Unknown",
+          division: "Unknown",
+          dateOfBirth: "Unknown",
+          address: "Unknown",
+          experience: "Unknown",
+          education: "Unknown",
+          skills: "Unknown",
+          city: "Unknown",
+        };
+
+        if (file.mimetype === "application/pdf") {
+          extractedData = await this.extractDataFromPDF(file.path);
+        }
+
+        // Merge extracted data with provided data
+        // Only use extracted data if the field is not already provided in createResumeDto
+        const mergedData = {
+          ...createResumeDto,
+          name: createResumeDto.name || extractedData.name,
+          email: createResumeDto.email || extractedData.email,
+          phone: createResumeDto.phone || extractedData.phone,
+          mobile: createResumeDto.mobile || extractedData.mobile,
+          district: createResumeDto.district || extractedData.district,
+          division: createResumeDto.division || extractedData.division,
+          dateOfBirth: createResumeDto.dateOfBirth || extractedData.dateOfBirth,
+          address: createResumeDto.address || extractedData.address,
+          experience: createResumeDto.experience || extractedData.experience,
+          education: extractedData.education,
+          skills: extractedData.skills,
+          city: extractedData.city,
+        };
+
+        // Prepare attachment data
+        if (file) {
+          mergedData.attachments = mergedData.attachments || [];
+          mergedData.attachments.push({
+            attachmentFile: file.originalname,
+            attachmentType: file.mimetype,
+            attachmentPath: file.path,
+          });
+        }
+
+        // Create the Resume entity
+        const resumeData = { ...mergedData };
+        delete resumeData.attachments;
+
+        const resume = this.resumeRepository.create(resumeData);
+        const savedResume = await queryRunner.manager.save(resume);
+
+        // Save attachments
+        if (mergedData.attachments && mergedData.attachments.length > 0) {
+          const resumeAttachments = mergedData.attachments.map((attachment) =>
+            this.resumeAttachmentRepository.create({
+              ...attachment,
+              resume: savedResume,
+            })
+          );
+          await queryRunner.manager.save(resumeAttachments);
+        }
+
+        await queryRunner.commitTransaction();
+        return savedResume;
+      }
     } catch (error) {
       await queryRunner.rollbackTransaction();
       throw new HttpException(

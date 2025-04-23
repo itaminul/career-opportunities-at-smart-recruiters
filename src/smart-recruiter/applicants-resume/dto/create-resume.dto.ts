@@ -6,8 +6,11 @@ import {
   IsArray,
   ValidateNested,
   IsOptional,
-  IsNotEmpty
+  IsNotEmpty,
+  Validate
 } from "class-validator";
+
+
 
 class CreateResumeAttachmentDto {
   @IsOptional()
