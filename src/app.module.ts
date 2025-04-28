@@ -9,6 +9,7 @@ import { SelectedResumeModule } from "./smart-recruiter/selected-resume/selected
 import { Resume } from "./entity/resume";
 import { Resume_attachments } from "./entity/Resume_attachements";
 import { InterviewCallModule } from "./smart-recruiter/interview-call/interview-call.module";
+import { InterviewCallReportModule } from './smart-recruiter/interview-call-report/interview-call-report.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { InterviewCallModule } from "./smart-recruiter/interview-call/interview-
     SelectedResumeModule,
     TypeOrmModule.forFeature([Resume, Resume_attachments]),
     InterviewCallModule,
+    InterviewCallReportModule,
   ],
   controllers: [AppController],
   providers: [AppService],
