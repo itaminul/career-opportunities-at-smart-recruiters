@@ -45,4 +45,5 @@ export class Resume {
 
   @OneToMany(() => JobCandidate, (jobCandidate) => jobCandidate.resume)
   jobCandidate: JobCandidate[];
+  age: number;
 }
