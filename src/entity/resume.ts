@@ -73,7 +73,8 @@ export class Resume {
   skillsTechnologies: string;
   @Column({ nullable: true })
   nameOfCV: string;
-
+  @Column({ default: 0 })
+  applicationCurretStatus: number;
   age?: number;
 
   @OneToMany(() => Resume_attachments, (attachment) => attachment.resume, {
