@@ -4,6 +4,7 @@ import { Photo } from "./entity/Photo";
 import { Resume } from "./entity/resume";
 import { Resume_attachments } from "./entity/Resume_attachements";
 import { JobCandidate } from "./entity/job_candidate";
+import { SelectedResume } from "./entity/selectedresume";
 
 // Export DataSourceOptions directly without instantiating DataSource
 export const AppDataSource: DataSourceOptions = {
@@ -13,7 +14,7 @@ export const AppDataSource: DataSourceOptions = {
   username: "erpdb",
   password: "123456",
   database: "all_services_db",
-  entities: [Users, Photo, Resume, Resume_attachments, JobCandidate],
+  entities: [Users, Photo, Resume, Resume_attachments, JobCandidate, SelectedResume],
   // migrations: ['./src/migrations/*.ts'],
   migrations: ["./dist/migrations/*.js"],
   synchronize: false,
