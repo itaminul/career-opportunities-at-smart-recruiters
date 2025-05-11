@@ -79,10 +79,22 @@ export class SelectedResumeService {
         insertedResumes.push(savedResume); // Add to the list of inserted resumes
       }
 
-   
-      return insertedResumes;
+      const existingResumesMessage =
+        existingIds.length > 0
+          ? `The following resume IDs already exist: ${existingIds.join(", ")}`
+          : null;
+      const insertedResumesMessage =
+        insertedResumes.length > 0
+          ? `Successfully inserted the following resume IDs: ${insertedResumes.map((resume) => resume.resumeId).join(", ")}`
+          : null;
+
+      const resultMessage = [existingResumesMessage, insertedResumesMessage]
+        .filter(Boolean)
+        .join(". ");
+
+      return { insertedResumes, message: resultMessage };
     } catch (error) {
-      throw error; // Handle any errors
+      throw error;
     }
   }
 }
