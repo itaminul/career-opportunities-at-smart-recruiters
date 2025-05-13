@@ -74,7 +74,6 @@ export class CreateResumeDto {
   @IsOptional()
   @IsDateString()
   dateOfBirth: string;
-
   @IsOptional()
   @IsString()
   notice_period: string;

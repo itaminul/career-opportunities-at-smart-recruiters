@@ -7,6 +7,7 @@ import { Resume_attachments } from "src/entity/Resume_attachements";
 import { Resume } from "src/entity/resume";
 import * as fs from "fs/promises";
 import { UniqueValidationService } from "src/validators/unique-fields.validator";
+import * as bcrypt from 'bcrypt';
 
 const pdfParse = require("pdf-parse") as (
   buffer: Buffer
@@ -100,12 +101,16 @@ export class ApplicantsResumeService {
           education: "Unknown",
           skills: "Unknown",
           city: "Unknown",
+          username: "Unknown",
+          password: "Unknown",
         };
 
         if (file.mimetype === "application/pdf") {
           extractedData = await this.extractDataFromPDF(file.path);
         }
 
+        const hashPassword = await bcrypt.hash(extractedData.password,10);
+        // await bcrypt.hash(extractedData.password, 10);
         // Merge extracted data with provided data
         // Only use extracted data if the field is not already provided in createResumeDto
         const mergedData = {
@@ -122,6 +127,8 @@ export class ApplicantsResumeService {
           education: extractedData.education,
           skills: extractedData.skills,
           city: extractedData.city,
+          username: extractedData.username,
+          password: hashPassword,
         };
 
         // Prepare attachment data
@@ -221,6 +228,8 @@ export class ApplicantsResumeService {
 
       // Extract education
       let education = this.extractEducation(text) || "Unknown";
+      let username = this.extractEducation(text) || "Unknown";
+      let password = this.extractEducation(text) || "Unknown";
 
       // Extract skills
       let skills = this.extractSkills(text) || "Unknown";
@@ -238,6 +247,8 @@ export class ApplicantsResumeService {
         education,
         skills,
         city,
+        username,
+        password,
       };
     } catch (error) {
       return {
@@ -253,6 +264,8 @@ export class ApplicantsResumeService {
         education: "Unknown",
         skills: "Unknown",
         city: "Unknown",
+        username: "Unknown",
+        password: "Unknown",
       };
     }
   }
