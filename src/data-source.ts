@@ -14,7 +14,7 @@ export const AppDataSource: DataSourceOptions = {
   username: "erpdb",
   password: "123456",
   database: "all_services_db",
-  entities: [Users, Photo, Resume, Resume_attachments, JobCandidate, SelectedResume],
+  entities: [Photo, Resume, Resume_attachments, JobCandidate, SelectedResume],
   // migrations: ['./src/migrations/*.ts'],
   migrations: ["./dist/migrations/*.js"],
   synchronize: false,
