@@ -68,7 +68,7 @@ export class ApplicantsResumeService {
         throw new HttpException(
           {
             success: false,
-            message: "Username alreax exist please try another",
+            message: "Username already exist please try another",
             statusCode: HttpStatus.CONFLICT,
             timestamp: new Date().toISOString(),
           },
