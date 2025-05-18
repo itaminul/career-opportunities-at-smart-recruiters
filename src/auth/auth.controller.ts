@@ -14,6 +14,7 @@ import * as bcrypt from "bcrypt";
 import { Resume } from "src/entity/resume";
 import { Resume_attachments } from "src/entity/Resume_attachements";
 import { JwtPayload } from "./jwt-payload.interface";
+import { use } from "passport";
 @Controller("auth")
 export class AuthController {
   constructor(
@@ -94,11 +95,15 @@ export class AuthController {
     try {
       const user = await this.validateUser(username, password);
       // Generate access token
-      const payload = { username: user.username, sub: user.id };
+      const payload = {
+        username: user.username,
+        sub: user.id,
+        roleName: user.roleName,
+      };
       const access_token = this.jwtService.sign(payload);
       return {
         access_token,
-        username        
+        role: user.roleName,
       };
     } catch (error) {
       throw error;
