@@ -4,14 +4,20 @@ import {
   HttpException,
   HttpStatus,
   Patch,
+  UseGuards,
 } from "@nestjs/common";
 import { InterviewCallService } from "./interview-call.service";
 import { InterviewerCallDto } from "./dto/interview-call.dto";
+import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
+import { RolesGuard } from "src/auth/roles.guard";
+import { Roles } from "src/auth/roles.decorator";
 
 @Controller("interview-call")
 export class InterviewCallController {
   constructor(public readonly interviewCallService: InterviewCallService) {}
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles("admin")
   @Patch()
   async update(@Body() InterviewerCallDto: InterviewerCallDto) {
     try {
