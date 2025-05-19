@@ -8,8 +8,7 @@ import { ApplicationScrutinyModule } from "./smart-recruiter/application-scrutin
 import { SelectedResumeModule } from "./smart-recruiter/selected-resume/selected-resume.module";
 import { Resume } from "./entity/resume";
 import { Resume_attachments } from "./entity/Resume_attachements";
-import { InterviewCallModule } from './smart-recruter/interview-call/interview-call.module';
-import { InterviewCallModule } from './smart-recruiter/interview-call/interview-call.module';
+import { InterviewCallModule } from "./smart-recruiter/interview-call/interview-call.module";
 
 @Module({
   imports: [
