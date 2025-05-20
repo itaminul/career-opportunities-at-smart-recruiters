@@ -12,7 +12,6 @@ export class InterviewCallService {
     public readonly selectedResumeRepository: Repository<SelectedResume>
   ) {}
 
-  // interview-call.service.ts
   async update(interviewData: InterviewerCallDto) {
     const { ids, ...rest } = interviewData;
 
@@ -23,7 +22,7 @@ export class InterviewCallService {
     const updateData: InterviewCallUpdateData = {
       ...rest,
       interviewScheduledDate: new Date(rest.interviewScheduledDate),
-      interviewStage: 2, // Always set status to 1
+      interviewStage: interviewData.interviewStage,
       Interviewer: interviewData.Interviewer,
       interviewScheduledTime: interviewData.interviewScheduledTime,
       interviewAddress: interviewData.interviewAddress,
