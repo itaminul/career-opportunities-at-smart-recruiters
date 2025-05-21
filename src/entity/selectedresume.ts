@@ -7,7 +7,7 @@ export class SelectedResume {
   id: number;
   @Column({ nullable: true })
   resumeId: number;
-  @Column({nullable: true})
+  @Column({ nullable: true })
   name: string;
   @Column({ nullable: true })
   address: string;
@@ -34,7 +34,6 @@ export class SelectedResume {
 
   @Column({ nullable: true })
   Interviewer: string;
-
   // Explanation:1 application view, 2 application selected 3 call for first interview 4 for second interview 5 for third interview 6 for final interview 7 for selected
   @Column({ nullable: false, default: 1 })
   interviewStage: number;
@@ -86,4 +85,7 @@ export class SelectedResume {
     this.remarksInterviewStatuge =
       stageMap[this.interviewStage] || "Unknown Stage";
   }
+
+  @Column({ default: true })
+  activeStatus: string;
 }
