@@ -23,9 +23,26 @@ A NestJS-based RESTful API to manage online job applications. This system allows
 - [multer](https://www.npmjs.com/package/multer) – File uploads
 - [pdf-parse](https://www.npmjs.com/package/pdf-parse) – PDF data extraction
 
+
 ## 📦 Installation
 
 ```bash
 git clone https://github.com/itaminul/career-opportunities-at-smart-recruiters.git
-cd job-application-api
-npm install
+cd  career-opportunities-at-smart-recruiters
+
+```bash
+$ npm install
+```
+
+## Compile and run the project
+
+```bash
+# development
+$ npm run start
+
+# watch mode
+$ npm run start:dev
+
+# production mode
+$ npm run start:prod
+```
