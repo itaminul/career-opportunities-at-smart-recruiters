@@ -6,19 +6,12 @@ import {
   IsNotEmpty,
 } from "class-validator";
 
-class CreateLoginDto {
-  @IsOptional()
-  @IsString()
-  attachmentFile: string;
-  @IsOptional()
-  @IsString()
-  attachmentType: string;
-  @IsOptional()
-  @IsString()
-  attachmentPath: string;
-}
+export class CreateLoginDto {
 
-export class CreateResumeDto {
+  @IsOptional()
+  @IsString()
+  id: string;
+  
   @IsOptional()
   @IsString()
   name: string;
@@ -40,35 +33,4 @@ export class CreateResumeDto {
   @IsOptional()
   @IsEmail()
   email: string;
-  @IsOptional()
-  @IsString()
-  mobile: string;
-  @IsOptional()
-  @IsString()
-  experience: string;
-  @IsOptional()
-  @IsString()
-  present_salary: string;
-  @IsOptional()
-  @IsString()
-  expectedSalary: number;
-  @IsString()
-  noticePeriod: string;
-  @IsOptional()
-  currentSalary: number;
-  @IsOptional()
-  @IsString()
-  city: string;
-  @IsOptional()
-  @IsString()
-  district: string;
-  @IsOptional()
-  @IsString()
-  division: string;
-  @IsOptional()
-  @IsDateString()
-  dateOfBirth: string;
-  @IsOptional()
-  @IsString()
-  notice_period: string;
 }
