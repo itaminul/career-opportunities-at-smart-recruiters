@@ -5,9 +5,8 @@ import {
   Get,
   Post,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
-  UsePipes,
-  ValidationPipe,
 } from "@nestjs/common";
 import { ApplicantsResumeService } from "./applicants-resume.service";
 import { CreateResumeDto } from "./dto/create-resume.dto";
@@ -17,26 +16,28 @@ import { diskStorage } from "multer";
 import { extname } from "path";
 import * as path from "path";
 import { Resume } from "src/entity/resume";
-import * as fs from "fs";
+import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
+import { RolesGuard } from "src/auth/roles.guard";
+import { Roles } from "src/auth/roles.decorator";
 
 @Controller("applicants-resume")
 export class ApplicantsResumeController {
   constructor(public readonly resumesService: ApplicantsResumeService) {}
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles("admin","candidate")
   @Get()
   async getAll() {
     return await this.resumesService.getAll();
   }
 
-
-  
-  @Post('upload')
+  @Post("upload")
   @UseInterceptors(
-    FileInterceptor('file', {
+    FileInterceptor("file", {
       storage: diskStorage({
         destination: (req, file, cb) => {
-          const uploadPath = path.join(process.cwd(), 'uploads', 'resumes');
-          require('fs').mkdirSync(uploadPath, { recursive: true });
+          const uploadPath = path.join(process.cwd(), "uploads", "resumes");
+          require("fs").mkdirSync(uploadPath, { recursive: true });
           cb(null, uploadPath);
         },
         filename: (req, file, callback) => {
@@ -45,22 +46,29 @@ export class ApplicantsResumeController {
           const randomName = Array(4)
             .fill(null)
             .map(() => Math.round(Math.random() * 16).toString(16))
-            .join('');
+            .join("");
           callback(null, `resume-${Date.now()}-${randomName}${fileExtName}`);
         },
       }),
       fileFilter: (req, file, callback) => {
-        const allowedMimeTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+        const allowedMimeTypes = [
+          "application/pdf",
+          "application/msword",
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        ];
         if (!allowedMimeTypes.includes(file.mimetype)) {
-          return callback(new BadRequestException('Only PDF and Word documents are allowed'), false);
+          return callback(
+            new BadRequestException("Only PDF and Word documents are allowed"),
+            false
+          );
         }
         callback(null, true);
       },
-    }),
+    })
   )
   async uploadResume(@UploadedFile() file: Express.Multer.File) {
     if (!file) {
-      throw new BadRequestException('File is required');
+      throw new BadRequestException("File is required");
     }
 
     const filePath = file.path;
@@ -68,12 +76,12 @@ export class ApplicantsResumeController {
 
     // Extract data from PDF if it's a PDF file
     let extractedData = {};
-    if (file.mimetype === 'application/pdf') {
+    if (file.mimetype === "application/pdf") {
       extractedData = await this.resumesService.extractDataFromPDF(filePath);
     }
 
     return {
-      message: 'File uploaded successfully',
+      message: "File uploaded successfully",
       filename: file.filename,
       originalname: file.originalname,
       path: filePath,
@@ -83,13 +91,13 @@ export class ApplicantsResumeController {
     };
   }
 
-  @Post('create')
+  @Post("create")
   @UseInterceptors(
-    FileInterceptor('file', {
+    FileInterceptor("file", {
       storage: diskStorage({
         destination: (req, file, cb) => {
-          const uploadPath = path.join(process.cwd(), 'uploads', 'resumes');
-          require('fs').mkdirSync(uploadPath, { recursive: true });
+          const uploadPath = path.join(process.cwd(), "uploads", "resumes");
+          require("fs").mkdirSync(uploadPath, { recursive: true });
           cb(null, uploadPath);
         },
         filename: (req, file, callback) => {
@@ -98,26 +106,33 @@ export class ApplicantsResumeController {
           const randomName = Array(4)
             .fill(null)
             .map(() => Math.round(Math.random() * 16).toString(16))
-            .join('');
+            .join("");
           callback(null, `resume-${Date.now()}-${randomName}${fileExtName}`);
         },
       }),
       fileFilter: (req, file, callback) => {
-        const allowedMimeTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+        const allowedMimeTypes = [
+          "application/pdf",
+          "application/msword",
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        ];
         if (!allowedMimeTypes.includes(file.mimetype)) {
-          return callback(new BadRequestException('Only PDF and Word documents are allowed'), false);
+          return callback(
+            new BadRequestException("Only PDF and Word documents are allowed"),
+            false
+          );
         }
         callback(null, true);
       },
-    }),
+    })
   )
   async saveResume(
     @Body() saveResume: CreateResumeDto,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file: Express.Multer.File
   ): Promise<Resume> {
     try {
       if (!file) {
-        throw new BadRequestException('Resume file is required');
+        throw new BadRequestException("Resume file is required");
       }
 
       const data = await this.resumesService.saveResume(saveResume, file);
