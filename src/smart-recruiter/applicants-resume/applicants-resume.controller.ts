@@ -4,6 +4,7 @@ import {
   Controller,
   Get,
   Post,
+  Req,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -19,16 +20,19 @@ import { Resume } from "src/entity/resume";
 import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
 import { RolesGuard } from "src/auth/roles.guard";
 import { Roles } from "src/auth/roles.decorator";
+import { Request } from "express";
+import { UserPayload } from "src/auth/user-payload.interface";
+import { CurrentUser } from "src/auth/user.decorator";
 
 @Controller("applicants-resume")
 export class ApplicantsResumeController {
   constructor(public readonly resumesService: ApplicantsResumeService) {}
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles("admin","candidate")
+  @Roles("admin", "candidate")
   @Get()
-  async getAll() {
-    return await this.resumesService.getAll();
+  async getAll(@CurrentUser() userInfo: UserPayload) {
+    return await this.resumesService.getAll(userInfo);
   }
 
   @Post("upload")
