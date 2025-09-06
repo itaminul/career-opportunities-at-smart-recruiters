@@ -1,6 +1,9 @@
-import { Body, Controller, Get, Post } from "@nestjs/common";
+import { Body, Controller, Get, Post, UseGuards } from "@nestjs/common";
 import { ApplicationScrutinyService } from "./application-scrutiny.service";
 import { ScrutinyFiltersDto } from "./dto/scrutiny-filters.dto";
+import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
+import { RolesGuard } from "src/auth/roles.guard";
+import { Roles } from "src/auth/roles.decorator";
 
 @Controller("application-scrutiny")
 export class ApplicationScrutinyController {
@@ -8,6 +11,8 @@ export class ApplicationScrutinyController {
     private readonly appScrutinyService: ApplicationScrutinyService
   ) {}
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles("admin")
   @Post()
   async getScrutinyApplicaton(@Body() filters: ScrutinyFiltersDto) {
     try {

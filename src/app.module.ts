@@ -1,6 +1,4 @@
 import { Module } from "@nestjs/common";
-import { AppController } from "./app.controller";
-import { AppService } from "./app.service";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AppDataSource } from "./data-source";
 import { ApplicantsResumeModule } from "./smart-recruiter/applicants-resume/applicants-resume.module";
@@ -29,6 +27,6 @@ import { ConfigModule } from "@nestjs/config";
     ConfigModule.forRoot({ isGlobal: true, envFilePath: ".env" }),
   ],
   controllers: [],
-  providers: [AppService, AuthModule, JwtService, JwtStrategy, JwtAuthGuard],
+  providers: [AuthModule, JwtService, JwtStrategy, JwtAuthGuard],
 })
 export class AppModule {}
